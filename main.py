@@ -53,6 +53,8 @@ if __name__=='__main__':
         st.write(f'Model precision score: {precision_score(y_test, prediction, average="micro")}')
         st.write(f'Model recall score: {recall_score(y_test, prediction, average="micro")}')
         st.write(f'Model f1 score: {f1_score(y_test, prediction, average="micro")}')
+        st.text("Confusion matrix")
+        st.write(confusion_matrix(y_test, prediction))
 
     if st.session_state['model'] is None:
         st.stop()
