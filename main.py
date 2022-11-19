@@ -30,29 +30,35 @@ if __name__=='__main__':
     st.text(f"Number of columns (features): {data['data'].shape[1]}")
     
     st.header("Feature Dimensionality Reduction")
-    n_comp = st.slider("Desire number of features", 1, min(data['data'].shape[0], data['data'].shape[1]))
+    col1, col2 = st.columns(2)
+    with col1:   
+        n_comp = st.slider("Desire number of features", 1, min(data['data'].shape[0], data['data'].shape[1]))
     pca = PCA(n_components=int(n_comp))
     data_train = pca.fit_transform(data['data'])
-    
-    st.text("Data train overview after reducing feature dimensionality")
-    st.write(data_train)
-    
-    train_size = st.slider("Train size", min_value=1, max_value=90)
+    with col1:
+        st.text("Data train overview after reducing feature dimensionality")
+        st.write(data_train)
+
+    with col2:
+        train_size = st.slider("Train size", min_value=1, max_value=90)
     
     X_train, X_test, y_train, y_test = train_test_split(data_train, data['target'], train_size=float(train_size)/100, random_state=7)
-    st.text(f"Train samples: {X_train.shape[0]}")
-    st.text(f"Test samples: {X_test.shape[0]}")
+    with col2:
+        st.text(f"Train samples: {X_train.shape[0]}")
+        st.text(f"Test samples: {X_test.shape[0]}")
     
     if (st.button("Train model")):
         model = LogisticRegression()
         model.fit(X_train, y_train)
         st.session_state['model'] = model
         prediction = model.predict(X_test)
+        prediction_prob = model.predict_proba(X_test)
 
         st.write(f'Model training score: {model.score(X_test, y_test)}')
         st.write(f'Model precision score: {precision_score(y_test, prediction, average="micro")}')
         st.write(f'Model recall score: {recall_score(y_test, prediction, average="micro")}')
         st.write(f'Model f1 score: {f1_score(y_test, prediction, average="micro")}')
+        st.write(f'Model log loss: {log_loss(y_test, prediction_prob)}')
         st.text("Confusion matrix")
         st.write(confusion_matrix(y_test, prediction))
 
